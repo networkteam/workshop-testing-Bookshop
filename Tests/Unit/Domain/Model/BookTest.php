@@ -1,25 +1,35 @@
 <?php
+
 namespace RobertLemke\Example\Bookshop\Tests\Unit\Domain\Model;
 
-/*                                                                        *
- * This script belongs to the FLOW3 package "RobertLemke.Example.Bookshop".              *
- *                                                                        *
- *                                                                        */
+use RobertLemke\Example\Bookshop\Domain\Model\Basket;
+use RobertLemke\Example\Bookshop\Domain\Model\Book;
 
-/**
- * Testcase for Book
- */
 class BookTest extends \TYPO3\Flow\Tests\UnitTestCase {
 
 	/**
 	 * @test
 	 */
-	public function makeSureThatSomethingHolds() {
-		$this->markTestIncomplete('Automatically generated test case; you need to adjust this!');
+	public function getPublisherGetsInformationFromIsbnLookupService() {
+			// Set up
+		$book = new Book();
+		$book->setIsbn('12345678');
 
-		$expected = 'Foo';
-		$actual = 'Foo'; // This should be the result of some function call
-		$this->assertSame($expected, $actual);
+		$isbnLookupService = $this->getMock('RobertLemke\Example\Bookshop\Service\IsbnLookupService');
+
+		$bookInfo = array('publisher' => 'M. Muster');
+		$isbnLookupService->expects($this->once())
+			->method('getBookInfo')
+			->with('12345678')
+			->will($this->returnValue($bookInfo));
+
+		$this->inject($book, 'isbnLookupService', $isbnLookupService);
+
+			// Execute
+		$publisher = $book->getPublisher();
+
+			// Assertions
+		$this->assertSame('M. Muster', $publisher);
 	}
+
 }
-?>
