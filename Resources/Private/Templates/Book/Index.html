@@ -33,7 +33,7 @@
 									<p>{book.description}</p>
 									<p>
 										<strong><f:format.number>{book.price}</f:format.number> €</strong>
-										<f:form action="add" controller="Basket" name="book" object="{book}">
+										<f:form action="add" controller="Basket" name="book" object="{book}" class="add-to-basket">
 											<button class="pull-right"><i class="icon-shopping-cart"></i> Add to Basket</button>
 										</f:form>
 									</p>
@@ -70,4 +70,23 @@
 			</fieldset>
 		</f:form>
 	</p>
+	<script>
+		jQuery(function($) {
+			$('.add-to-basket').submit(function() {
+				var form = $(this);
+				var loading = $('<h3 id="spinner">Loading...</h3>');
+				$('h2').after(loading);
+				$.ajax(form.attr('action'), {
+					data: form.serialize(),
+					success: function(data) {
+						loading.detach();
+						var html = $(data);
+						var messages = html.find('ul.unstyled');
+						$('h2').after(messages);
+					}
+				});
+				return false;
+			});
+		})
+	</script>
 </f:section>
